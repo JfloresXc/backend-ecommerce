@@ -1,4 +1,3 @@
-const User = require('../models/User.model')
 const supertest = require('supertest')
 const { app } = require('../index')
 const api = supertest(app)
@@ -9,7 +8,7 @@ describe('User', () => {
     const user = {
       email: 'jfloresxc@gmail.com',
       username: 'jfloresxc',
-      password: 'jfloresxc'
+      password: 'jfloresxc',
     }
 
     api

@@ -1,22 +1,12 @@
-const { Types: { ObjectId } } = require('mongoose')
 const { Collection: Model } = require('../models/Collection.model')
 
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
+const { isSomeEmptyFromModel } = require('../helpers/validations')
 const MODULE = 'COLLECTION'
 const { setConfigError } = configError({ module: MODULE })
 
 const controller = {}
-
-function validateModel ({ title, description, idUser }) {
-  if (title && description && idUser) return true
-  else {
-    throw new ErrorLocal({
-      message: 'Title or description or idUser not found',
-      statusCode: 400
-    })
-  }
-}
 
 controller.getCollections = async (req, res, next) => {
   try {
@@ -42,17 +32,18 @@ controller.getCollection = async (req, res, next) => {
 
 controller.postCollection = async (req, res, next) => {
   try {
-    const collectionBody = req.body
+    const body = req.body
+    const { name, description } = body
 
-    if (validateModel(collectionBody)) {
-      const collectionToSave = new Model({
-        ...collectionBody,
-        idUser: ObjectId(collectionBody.idUser)
-      })
+    if (isSomeEmptyFromModel([name])) return
 
-      const response = await collectionToSave.save()
-      res.status(200).json(response)
-    }
+    const collectionToSave = new Model({
+      name,
+      description,
+    })
+
+    const response = await collectionToSave.save()
+    res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new collection' }, next)
   }
@@ -65,13 +56,17 @@ controller.updateCollection = async (req, res, next) => {
 
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
-    if (validateModel({ ...req.body })) {
-      const response = await Model.findByIdAndUpdate(id, {
+    if (isSomeEmptyFromModel([title, description])) return
+
+    const response = await Model.findByIdAndUpdate(
+      id,
+      {
         title,
-        description
-      }, { new: true })
-      res.status(200).json(response)
-    }
+        description,
+      },
+      { new: true }
+    )
+    res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a collection for id' }, next)
   }

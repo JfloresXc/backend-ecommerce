@@ -79,13 +79,11 @@ controller.signup = async (req, res, next) => {
       email,
       username,
       password,
-      idRole: ObjectId(idRole)
+      role: ObjectId(idRole)
     })
     await userToCreate.save()
 
-    const { token } = await getToken({ email, password })
-
-    res.status(202).json({ email, username, token })
+    res.status(202).json({ message: '¡User created successfully!' })
   } catch (error) {
     setConfigError(error, { action: 'POST - Signup user' }, next)
   }

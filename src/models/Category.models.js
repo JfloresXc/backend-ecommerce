@@ -1,27 +1,31 @@
 const { model, Schema, Types } = require('mongoose')
 const { setCustomedModel } = require('../helpers/mongooseHandler')
 
-const Publication = new Schema(
+const SchemaModel = new Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true
     },
     description: {
       type: String,
-      required: true
+      default: ''
+    },
+    state: {
+      type: Number,
+      default: 1
     },
     idCollection: {
       type: Types.ObjectId,
+      ref: 'Collection',
       required: true
     }
   },
   {
     timestamps: true
   }
-
 )
 
-setCustomedModel(Publication)
+setCustomedModel(SchemaModel)
 
-module.exports = model('publications', Publication)
+module.exports = { Category: model('Category', SchemaModel) }

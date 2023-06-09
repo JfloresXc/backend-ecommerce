@@ -19,6 +19,8 @@ midlewares.verifyToken = (request, response, next) => {
       if (decodedToken?.idUser) {
         request.idUser = decodedToken?.idUser
         next()
+      } else {
+        console.log(decodedToken)
       }
     } else throw new ErrorLocal({ message: 'No inicia con la palabra Bearer' })
   } catch (error) {
@@ -38,7 +40,12 @@ midlewares.checkRole = (codeModule, codeAction) => async (request, response, nex
     const findedPermission = permissions.find(permissionKey => permissionKey.codeModule === codeModule && permissionKey.codeAction === codeAction)
 
     if (findedPermission) next()
-    else throw new ErrorLocal({ message: 'Role not allowed', statusCode: 409 })
+    else {
+      throw new ErrorLocal({
+        message: '¡Dont have permissions! - Your idRole is: ' + idRole,
+        statusCode: 409
+      })
+    }
   } catch (error) {
     setConfigError(error, { action: 'POST - checkRole' }, next)
   }

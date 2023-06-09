@@ -1,19 +1,19 @@
-const { model, Schema, Types } = require('mongoose')
+const { model, Schema } = require('mongoose')
 const { setCustomedModel } = require('../helpers/mongooseHandler')
 
-const Collection = new Schema(
+const SchemaModel = new Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true
     },
     description: {
       type: String,
-      required: true
+      default: ''
     },
-    idUser: {
-      type: Types.ObjectId,
-      required: true
+    state: {
+      type: Number,
+      default: 1
     }
   },
   {
@@ -22,6 +22,6 @@ const Collection = new Schema(
 
 )
 
-setCustomedModel(Collection)
+setCustomedModel(SchemaModel)
 
-module.exports = { Collection: model('Collection', Collection) }
+module.exports = { Collection: model('Collection', SchemaModel) }

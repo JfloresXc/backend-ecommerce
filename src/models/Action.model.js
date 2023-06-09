@@ -5,11 +5,13 @@ const MongoSchema = new Schema(
   {
     name: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     },
     code: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     }
   },
   {

@@ -1,6 +1,7 @@
 const { model, Schema, Types } = require('mongoose')
+const { setCustomedModel } = require('../helpers/mongooseHandler')
 
-const User = new Schema(
+const ShemaModel = new Schema(
   {
     username: {
       type: String,
@@ -17,7 +18,8 @@ const User = new Schema(
     },
     role: {
       type: Types.ObjectId,
-      ref: 'Role'
+      ref: 'Role',
+      required: true
     },
     state: {
       type: Number,
@@ -29,12 +31,6 @@ const User = new Schema(
   }
 )
 
-User.set('toJSON', {
-  transform: (document, object) => {
-    object.id = object._id
-    delete object._id
-    delete object.__v
-  }
-})
+setCustomedModel(ShemaModel)
 
-module.exports = { User: model('users', User) }
+module.exports = { User: model('User', ShemaModel) }

@@ -1,26 +1,26 @@
 const moongose = require('mongoose')
-const Publication = require('../models/Publications.models')
+const Product = require('../models/Product.model')
 const { server } = require('../index')
 const {
   api,
-  PUBLICATIONS,
+  PRODUCTS,
   API_URLS,
   HEADERS,
-  getAllPublications
+  getAllProducts
 } = require('./helpers')
 
-const { publicationUrl: API_URL } = API_URLS
+const { productUrl: API_URL } = API_URLS
 
 beforeEach(async () => {
-  await Publication.deleteMany()
+  await Product.deleteMany()
 
-  for (const publication of PUBLICATIONS) {
-    const publicationModel = new Publication(publication)
-    await publicationModel.save()
+  for (const product of PRODUCTS) {
+    const productModel = new Product(product)
+    await productModel.save()
   }
 })
 
-describe('publications', () => {
+describe('products', () => {
   test('are returned as json and status 200', async () => {
     await api
       .get(`${API_URL}`)
@@ -29,17 +29,17 @@ describe('publications', () => {
       .expect('Content-Type', /application\/json/)
   })
 
-  test(`there are ${PUBLICATIONS.length} objects`, async () => {
-    const { publications } = await getAllPublications()
+  test(`there are ${PRODUCTS.length} objects`, async () => {
+    const { products } = await getAllProducts()
 
-    expect(publications).toHaveLength(PUBLICATIONS.length)
+    expect(products).toHaveLength(PRODUCTS.length)
   })
 
-  const description1 = PUBLICATIONS[0].description
+  const description1 = PRODUCTS[0].description
   test(`to contains ${description1}`, async () => {
-    const { publications } = await getAllPublications()
+    const { products } = await getAllProducts()
 
-    const descriptions = publications.map(item => item.description)
+    const descriptions = products.map(item => item.description)
     expect(descriptions).toContain(description1)
   })
 
@@ -51,16 +51,16 @@ describe('publications', () => {
   })
 
   test('one note is received with correct id', async () => {
-    const { publications } = await getAllPublications()
-    const [firstPublication] = publications
+    const { products } = await getAllProducts()
+    const [firstProduct] = products
 
-    const { body: onePublication } = await api
-      .get(`${API_URL}/${firstPublication.id}`)
+    const { body: oneProduct } = await api
+      .get(`${API_URL}/${firstProduct.id}`)
       .set(HEADERS)
       .expect(200)
 
-    const descriptions = publications.map(item => item.description)
-    expect(descriptions).toContain(onePublication.description)
+    const descriptions = products.map(item => item.description)
+    expect(descriptions).toContain(oneProduct.description)
   })
 
   test('a empty note is not added', async () => {
@@ -82,17 +82,17 @@ describe('publications', () => {
       description: 'Test 3 Desc'
     }
 
-    const { body: addedPublication } = await api
+    const { body: addedProduct } = await api
       .post(`${API_URL}`)
       .set(HEADERS)
       .send(newObject)
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    const { publications } = await getAllPublications()
-    const descriptions = publications.map(item => item.description)
+    const { products } = await getAllProducts()
+    const descriptions = products.map(item => item.description)
 
-    expect(descriptions).toContain(addedPublication.description)
+    expect(descriptions).toContain(addedProduct.description)
   })
 
   test('a note is not deleted for empty id', async () => {
@@ -103,14 +103,14 @@ describe('publications', () => {
   })
 
   test('a note is deleted for id', async () => {
-    const { publications: firstResponde } = await getAllPublications()
+    const { products: firstResponde } = await getAllProducts()
 
     await api
       .delete(`${API_URL}/${firstResponde[0].id}`)
       .set(HEADERS)
       .expect(200)
 
-    const { publications: secondResponse } = await getAllPublications()
+    const { products: secondResponse } = await getAllProducts()
     expect(secondResponse).toHaveLength(firstResponde.length - 1)
   })
 })

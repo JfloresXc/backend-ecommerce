@@ -9,7 +9,7 @@ const Role = new Schema(
     },
     description: {
       type: String,
-      unique: true
+      default: ''
     },
     state: {
       type: Number,

@@ -6,9 +6,12 @@ const {
   getCollection,
   getCollections
 } = require('../controllers/collection.controllers')
+const { DICITONARY_ACTIONS, DICTIONARY_MODULES } = require('../utils/permissions')
+const { LIST, ADD } = DICITONARY_ACTIONS
+const { COLECCTION } = DICTIONARY_MODULES
 
-route.get('/', verifyToken, checkRole('001', '1'), getCollections)
-route.get('/:id', verifyToken, getCollection)
-route.post('/', verifyToken, postCollection)
+route.get('/', verifyToken, checkRole(COLECCTION, LIST), getCollections)
+route.get('/:id', verifyToken, checkRole(COLECCTION, LIST), getCollection)
+route.post('/', verifyToken, checkRole(COLECCTION, ADD), postCollection)
 
 module.exports = route

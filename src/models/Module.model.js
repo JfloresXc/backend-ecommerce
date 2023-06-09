@@ -5,7 +5,8 @@ const Module = new Schema(
   {
     name: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     },
     description: {
       type: String,
@@ -13,7 +14,8 @@ const Module = new Schema(
     },
     code: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     },
     state: {
       type: Number,
@@ -27,4 +29,4 @@ const Module = new Schema(
 
 setCustomedModel(Module)
 
-module.exports = { Module: model('modules', Module) }
+module.exports = { Module: model('Module', Module) }

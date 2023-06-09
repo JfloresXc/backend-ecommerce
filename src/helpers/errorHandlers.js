@@ -9,7 +9,14 @@ const errorResponse =
       action = '',
       isSavedLog = true
     }, state = 400) =>
-      response.status(state).json({ message, name, module, action, stack })
+      response.status(state).json({
+        message,
+        name,
+        module,
+        action,
+        stack,
+        isError: true
+      })
 
 const ERRORS_HANDLERS = {
   // ----------------- ?
@@ -38,6 +45,8 @@ const ERRORS_HANDLERS = {
     errorResponse(response, { message: 'Error database connection - ' + message, name }, 503),
   CastError:
   (response, error) => errorResponse(response, error),
+  MongoError:
+    (response, error) => errorResponse(response, error, 502),
   // ----------------- DEFAULT
   default:
   (response, error) => {

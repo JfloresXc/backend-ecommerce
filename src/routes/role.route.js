@@ -1,8 +1,9 @@
 const { Router } = require('express')
-const { getRoles } = require('../controllers/role.controller')
+const { getRoles, postRole } = require('../controllers/role.controller')
 
 const route = new Router()
 
 route.get('/', getRoles)
+route.post('/', postRole)
 
 module.exports = route

@@ -24,4 +24,4 @@ const Permission = new Schema(
 
 setCustomedModel(Permission)
 
-module.exports = { Permission: model('permissions', Permission) }
+module.exports = { Permission: model('Permission', Permission) }
