@@ -28,27 +28,33 @@ midlewares.verifyToken = (request, response, next) => {
   }
 }
 
-midlewares.checkRole = (codeModule, codeAction) => async (request, response, next) => {
-  try {
-    const idUser = request.idUser
-    const user = await User.findById(idUser).populate('role')
-    if (!user) throw new ErrorLocal({ message: 'User not found' })
+midlewares.checkRole =
+  (codeModule, codeAction) => async (request, response, next) => {
+    try {
+      const idUser = request.idUser
+      const user = await User.findById(idUser).populate('role')
+      if (!user) throw new ErrorLocal({ message: 'User not found' })
 
-    const idRole = user.role.id
-    const permissions = await getPermissionsForIdRole({ idRole })
+      const idRole = user.role.id
+      const name = user.role.name
+      const permissions = await getPermissionsForIdRole({ idRole })
 
-    const findedPermission = permissions.find(permissionKey => permissionKey.codeModule === codeModule && permissionKey.codeAction === codeAction)
+      const findedPermission = permissions.find(
+        (permissionKey) =>
+          permissionKey.codeModule === codeModule &&
+          permissionKey.codeAction === codeAction
+      )
 
-    if (findedPermission) next()
-    else {
-      throw new ErrorLocal({
-        message: '¡Dont have permissions! - Your idRole is: ' + idRole,
-        statusCode: 409
-      })
+      if (findedPermission) next()
+      else {
+        throw new ErrorLocal({
+          message: '¡Dont have permissions! - Your role is: ' + name,
+          statusCode: 409,
+        })
+      }
+    } catch (error) {
+      setConfigError(error, { action: 'POST - checkRole' }, next)
     }
-  } catch (error) {
-    setConfigError(error, { action: 'POST - checkRole' }, next)
   }
-}
 
 module.exports = midlewares
