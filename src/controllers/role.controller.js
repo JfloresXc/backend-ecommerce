@@ -1,17 +1,18 @@
 const { Role: Model } = require('../models/Role.model')
 const { configError } = require('../helpers/catchHandler')
-const { isSomeEmptyFromModel } = require('../helpers/validations')
+const {
+  isSomeEmptyFromModel,
+  validateParamsInQuery,
+} = require('../helpers/validations')
 const ErrorLocal = require('../utils/Error')
 const MODULE = 'ROLE'
 const { setConfigError } = configError({ module: MODULE })
 
 const controller = {}
 
-controller.getAllRoles = async (req, res, next) => {
+controller.getAllRoles = async (request, res, next) => {
   try {
-    const state = req.query.state
-    let query = {}
-    if (state) query = { state }
+    const query = validateParamsInQuery({ request })
 
     const roles = await Model.find(query).populate('role')
     res.status(200).json(roles)
