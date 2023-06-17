@@ -1,13 +1,19 @@
-const { verifyToken, checkRole } = require('../middlewares/authorization.midlewares')
+const {
+  verifyToken,
+  checkRole,
+} = require('../middlewares/authorization.midlewares')
 const { Router } = require('express')
 const route = new Router()
 const {
   getCategories,
   postCategory,
-  getCategory
+  getCategory,
 } = require('../controllers/category.controller')
-const { DICITONARY_ACTIONS, DICTIONARY_MODULES } = require('../utils/permissions')
-const { LIST, ADD } = DICITONARY_ACTIONS
+const {
+  DICTIONARY_ACTIONS,
+  DICTIONARY_MODULES,
+} = require('../utils/permissions')
+const { LIST, ADD } = DICTIONARY_ACTIONS
 const { CATEGORY } = DICTIONARY_MODULES
 
 route.get('/', verifyToken, checkRole(CATEGORY, LIST), getCategories)

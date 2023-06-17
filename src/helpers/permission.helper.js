@@ -7,20 +7,29 @@ helper.getPermissionsForIdRole = async ({ idRole }) => {
   return permisos
 }
 
-helper.validatePermissionDuplicate = async ({ permissionsWhithoutRole = [], idRole }) => {
+helper.validatePermissionDuplicate = async ({
+  permissionsWhithoutRole = [],
+  idRole,
+}) => {
   const permissionsForIdRole = await helper.getPermissionsForIdRole({ idRole })
 
-  permissionsForIdRole.forEach(permission => {
+  permissionsForIdRole.forEach((permission) => {
     const { codeModule, codeAction } = permission
-    const index = permissionsWhithoutRole.findIndex(permission => {
-      const { codeModule: codeModulePermission, codeAction: codeActionPermission } = permission
-      return codeModulePermission === codeModule && codeActionPermission === codeAction
+    const index = permissionsWhithoutRole.findIndex((permission) => {
+      const {
+        codeModule: codeModulePermission,
+        codeAction: codeActionPermission,
+      } = permission
+      return (
+        codeModulePermission === codeModule &&
+        codeActionPermission === codeAction
+      )
     })
 
     if (index !== -1) {
       throw new ErrorLocal({
         message: '¡Duplicated permission!',
-        statusCode: 400
+        statusCode: 400,
       })
     }
   })

@@ -1,9 +1,9 @@
 const { Router } = require('express')
 const {
-  getRoles,
   postRole,
   getRoleforId,
   updateRole,
+  getAllRoles,
 } = require('../controllers/role.controller')
 const {
   checkRole,
@@ -12,12 +12,12 @@ const {
 const route = new Router()
 const {
   DICTIONARY_MODULES,
-  DICITONARY_ACTIONS,
+  DICTIONARY_ACTIONS,
 } = require('../utils/permissions')
-const { LIST, ADD, UPDATE } = DICITONARY_ACTIONS
+const { LIST, ADD, UPDATE } = DICTIONARY_ACTIONS
 const { ROLE } = DICTIONARY_MODULES
 
-route.get('/', verifyToken, checkRole(ROLE, LIST), getRoles)
+route.get('/', verifyToken, checkRole(ROLE, LIST), getAllRoles)
 route.post('/', verifyToken, checkRole(ROLE, ADD), postRole)
 route.get('/:id', verifyToken, checkRole(ROLE, LIST), getRoleforId)
 route.put('/:id', verifyToken, checkRole(ROLE, UPDATE), verifyToken, updateRole)

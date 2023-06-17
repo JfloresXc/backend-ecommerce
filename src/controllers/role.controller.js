@@ -7,9 +7,13 @@ const { setConfigError } = configError({ module: MODULE })
 
 const controller = {}
 
-controller.getRoles = async (req, res, next) => {
+controller.getAllRoles = async (req, res, next) => {
   try {
-    const roles = await Model.find().populate('role')
+    const state = req.query.state
+    let query = {}
+    if (state) query = { state }
+
+    const roles = await Model.find(query).populate('role')
     res.status(200).json(roles)
   } catch (error) {
     setConfigError(error, { action: 'GET - All publications' }, next)
