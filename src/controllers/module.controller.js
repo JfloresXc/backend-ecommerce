@@ -13,12 +13,44 @@ controller.postModule = async (req, res, next) => {
     if (isSomeEmptyFromModel([name, code])) return
 
     const moduleSave = new Model({
-      name, description, state, code
+      name,
+      description,
+      state,
+      code,
     })
     const response = await moduleSave.save()
     res.status(200).json(response)
   } catch (error) {
-    setConfigError(error, { action: 'POST - Create a new module' }, next)
+    setConfigError(error, { module: 'POST - Create a new module' }, next)
+  }
+}
+
+controller.postModules = async (req, res, next) => {
+  try {
+    const body = req.body
+    const { modules } = body
+    const modulesToSend = []
+
+    for (const moduleKey of modules) {
+      const { name, code } = moduleKey
+      isSomeEmptyFromModel([name, code])
+    }
+
+    for (const moduleKey of modules) {
+      const { name, code, description, state = 1 } = moduleKey
+      const moduleSave = new Model({
+        name,
+        code,
+        description,
+        state,
+      })
+      const response = await moduleSave.save()
+      modulesToSend.push(response)
+    }
+
+    res.status(200).json(modulesToSend)
+  } catch (error) {
+    setConfigError(error, { module: 'POST - Create a many modules' }, next)
   }
 }
 
@@ -27,7 +59,7 @@ controller.getAllModules = async (req, res, next) => {
     const modules = await Model.find({})
     res.status(200).json(modules)
   } catch (error) {
-    setConfigError(error, { action: 'GET - All modules' }, next)
+    setConfigError(error, { module: 'GET - All modules' }, next)
   }
 }
 

@@ -13,12 +13,40 @@ controller.postAction = async (req, res, next) => {
     if (isSomeEmptyFromModel([name, code])) return
 
     const actionSave = new Model({
-      name, code
+      name,
+      code,
     })
     const response = await actionSave.save()
     res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new action' }, next)
+  }
+}
+
+controller.postActions = async (req, res, next) => {
+  try {
+    const body = req.body
+    const { actions } = body
+    const actionsToSend = []
+
+    for (const actionKey of actions) {
+      const { name, code } = actionKey
+      isSomeEmptyFromModel([name, code])
+    }
+
+    for (const actionKey of actions) {
+      const { name, code } = actionKey
+      const actionSave = new Model({
+        name,
+        code,
+      })
+      const response = await actionSave.save()
+      actionsToSend.push(response)
+    }
+
+    res.status(200).json(actionsToSend)
+  } catch (error) {
+    setConfigError(error, { action: 'POST - Create a many actions' }, next)
   }
 }
 
