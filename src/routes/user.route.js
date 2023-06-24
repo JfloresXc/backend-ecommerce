@@ -19,12 +19,7 @@ const route = new Router()
 
 route.get('/', verifyToken, checkRole(USER, LIST), getUsers)
 route.get('/:id', verifyToken, checkRole(USER, LIST), getUser)
-route.put(
-  '/changePassword',
-  verifyToken,
-  checkRole(USER, UPDATE),
-  changePassword
-)
+route.put('/changePassword', verifyToken, changePassword)
 route.put('/:id', verifyToken, checkRole(USER, UPDATE), updateUser)
 
 module.exports = route

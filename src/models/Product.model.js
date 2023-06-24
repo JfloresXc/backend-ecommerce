@@ -5,53 +5,54 @@ const SchemaModel = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
+      unique: true,
     },
     code: {
       type: String,
-      required: true
+      required: true,
+      unique: true,
     },
     description: {
       type: String,
-      default: ''
+      default: '',
     },
     price: {
       type: Number,
-      default: 0
+      default: 0,
     },
     priceBefore: {
       type: Number,
-      default: 0
+      default: 0,
     },
     discountPercentage: {
       type: Number,
-      default: 0
+      default: 0,
     },
     stock: {
       type: Number,
-      default: 0
+      default: 0,
     },
     rating: {
       type: Number,
-      default: 5
+      default: 5,
     },
     brand: {
       type: String,
-      default: 'Personality'
+      default: 'Personality',
     },
     state: {
       type: Number,
-      default: 1
+      default: 1,
     },
     category: {
       type: Types.ObjectId,
-      ref: 'Category'
-    }
+      ref: 'Category',
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
-
 )
 
 setCustomedModel(SchemaModel)

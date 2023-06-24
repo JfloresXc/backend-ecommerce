@@ -39,11 +39,12 @@ midlewares.checkRole =
       const name = user.role.name
       const permissions = await getPermissionsForIdRole({ idRole })
 
-      const findedPermission = permissions.find(
-        (permissionKey) =>
+      const findedPermission = permissions.find((permissionKey) => {
+        return (
           permissionKey.codeModule === codeModule &&
           permissionKey.codeAction === codeAction
-      )
+        )
+      })
 
       if (findedPermission) next()
       else {

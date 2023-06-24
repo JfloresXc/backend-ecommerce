@@ -1,17 +1,20 @@
-const { Types: { ObjectId } } = require('mongoose')
 const { Category: Model } = require('../models/Category.models')
 
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
 const MODULE = 'Category'
 const { setConfigError } = configError({ module: MODULE })
-const { isSomeEmptyFromModel } = require('../helpers/validations')
+const {
+  isSomeEmptyFromModel,
+  validateParamsInQuery,
+} = require('../helpers/validations')
 
 const controller = {}
 
-controller.getCategories = async (req, res, next) => {
+controller.getCategories = async (request, res, next) => {
   try {
-    const Categories = await Model.find({})
+    const query = validateParamsInQuery({ request })
+    const Categories = await Model.find(query)
     res.status(200).json(Categories)
   } catch (error) {
     setConfigError(error, { action: 'GET - All Categories' }, next)
@@ -34,15 +37,14 @@ controller.getCategory = async (req, res, next) => {
 controller.postCategory = async (req, res, next) => {
   try {
     const body = req.body
-    const { name, description, state, idCollection } = body
+    const { name, description, state } = body
 
-    if (isSomeEmptyFromModel([name, idCollection])) return
+    if (isSomeEmptyFromModel([name])) return
 
     const categoryToSave = new Model({
       name,
       description,
       state,
-      idCollection: ObjectId(idCollection)
     })
 
     const response = await categoryToSave.save()
@@ -56,18 +58,21 @@ controller.updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params
     const body = req.body
-    const { name, description, state, idCollection } = body
+    const { name, description, state } = body
 
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
-    if (isSomeEmptyFromModel([name, idCollection])) return
+    if (isSomeEmptyFromModel([name])) return
 
-    const response = await Model.findByIdAndUpdate(id, {
-      name,
-      description,
-      state,
-      idCollection: ObjectId(idCollection)
-    }, { new: true })
+    const response = await Model.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description,
+        state,
+      },
+      { new: true }
+    )
     res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a category for id' }, next)

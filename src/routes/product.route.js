@@ -11,7 +11,7 @@ const {
   getProduct,
   getProductForIdCategory,
   getProducts,
-} = require('../controllers/product.controllers')
+} = require('../controllers/product.controller')
 const {
   DICTIONARY_ACTIONS,
   DICTIONARY_MODULES,

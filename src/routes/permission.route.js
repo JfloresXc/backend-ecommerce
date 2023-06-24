@@ -40,7 +40,7 @@ route.delete(
   checkRole(PERMISSION, DELETE),
   deletePermission
 )
-route.post('/many', verifyToken, postManyPermission)
+route.post('/many', verifyToken, checkRole(PERMISSION, ADD), postManyPermission)
 route.delete(
   '/many',
   verifyToken,

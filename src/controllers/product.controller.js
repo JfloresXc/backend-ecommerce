@@ -1,4 +1,6 @@
-const { Types: { ObjectId } } = require('mongoose')
+const {
+  Types: { ObjectId },
+} = require('mongoose')
 const { Product: Model } = require('../models/Product.model')
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
@@ -33,7 +35,7 @@ controller.getProduct = async (req, res, next) => {
     const { id } = req.params
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
-    const product = await Model.findById(id)
+    const product = await Model.findById(id).populate('category')
     res.json(product)
   } catch (error) {
     setConfigError(error, { action: 'GET - One product for id' }, next)
@@ -54,15 +56,10 @@ controller.postProduct = async (req, res, next) => {
       rating,
       brand,
       state,
-      idCategory
+      idCategory,
     } = body
 
-    if (isSomeEmptyFromModel([
-      name,
-      code,
-      price,
-      idCategory
-    ])) return
+    if (isSomeEmptyFromModel([name, code, price, idCategory])) return
 
     const productToSave = new Model({
       name,
@@ -75,7 +72,7 @@ controller.postProduct = async (req, res, next) => {
       rating,
       brand,
       state,
-      category: ObjectId(idCategory)
+      category: ObjectId(idCategory),
     })
     const response = await productToSave.save()
     res.status(200).json(response)
@@ -101,29 +98,28 @@ controller.updateProduct = async (req, res, next) => {
       rating,
       brand,
       state,
-      idCategory
+      idCategory,
     } = body
 
-    if (isSomeEmptyFromModel([
-      name,
-      code,
-      price,
-      idCategory
-    ])) return
+    if (isSomeEmptyFromModel([name, code, price, idCategory])) return
 
-    const response = await Model.findByIdAndUpdate(id, {
-      name,
-      code,
-      description,
-      price,
-      priceBefore,
-      discountPercentage,
-      stock,
-      rating,
-      brand,
-      state,
-      category: ObjectId(idCategory)
-    }, { new: true })
+    const response = await Model.findByIdAndUpdate(
+      id,
+      {
+        name,
+        code,
+        description,
+        price,
+        priceBefore,
+        discountPercentage,
+        stock,
+        rating,
+        brand,
+        state,
+        category: ObjectId(idCategory),
+      },
+      { new: true }
+    )
     res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a product for id' }, next)
@@ -137,7 +133,11 @@ controller.deleteProduct = async (req, res, next) => {
 
     const deletedProduct = await Model.findByIdAndDelete(id)
 
-    if (!deletedProduct) throw new ErrorLocal({ message: 'Id is not finded, product is not deleted', statusCode: 400 })
+    if (!deletedProduct)
+      throw new ErrorLocal({
+        message: 'Id is not finded, product is not deleted',
+        statusCode: 400,
+      })
     res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
   } catch (error) {
     setConfigError(error, { action: 'DELETE - A product for id' }, next)

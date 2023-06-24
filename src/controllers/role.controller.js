@@ -14,7 +14,7 @@ controller.getAllRoles = async (request, res, next) => {
   try {
     const query = validateParamsInQuery({ request })
 
-    const roles = await Model.find(query).populate('role')
+    const roles = await Model.find(query)
     res.status(200).json(roles)
   } catch (error) {
     setConfigError(error, { action: 'GET - All publications' }, next)
