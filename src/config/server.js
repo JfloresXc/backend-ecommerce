@@ -14,8 +14,10 @@ app.set('port', PORT)
 app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
 app.use(fileupload())
+// app.use(bodyParser.json({ limit: '10mb' }))
+// app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
 // ROUTES
 app.use('/api/product', require('../routes/product.route'))

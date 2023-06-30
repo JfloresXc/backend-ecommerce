@@ -1,13 +1,16 @@
 const fileMiddleware = (req, res, next) => {
   if (req.files) {
-    const file = req.files.file
-    if (file.size > 1024 * 1024) {
+    const files = req.files ?? []
+    const limit = 1024 * 1024
+    const file = files.file
+
+    if (file.size > limit) {
       return res.json({
-        message: 'File size limit has been reached'
+        message: `File ${file.name} size limit has been reached`,
       })
     }
     next()
-  } else return res.status(403).json({ message: 'File not found' })
+  } else return res.status(403).json({ message: 'Files not found' })
 }
 
-export { fileMiddleware }
+module.exports = { fileMiddleware }

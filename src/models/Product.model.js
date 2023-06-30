@@ -47,6 +47,7 @@ const SchemaModel = new Schema(
     },
     category: {
       type: Types.ObjectId,
+      required: true,
       ref: 'Category',
     },
   },

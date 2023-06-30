@@ -2,11 +2,15 @@ const {
   Types: { ObjectId },
 } = require('mongoose')
 const { Product: Model } = require('../models/Product.model')
+const {
+  ImagesOfProduct: ModelImagesOfProduct,
+} = require('../models/ImagesOfProduct.model')
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
 const MODULE = 'PRODUCT'
 const { setConfigError } = configError({ module: MODULE })
 const { isSomeEmptyFromModel } = require('../helpers/validations')
+const { uploadImageToDB } = require('../helpers/image.helper')
 
 const controller = {}
 
@@ -39,6 +43,20 @@ controller.getProduct = async (req, res, next) => {
     res.json(product)
   } catch (error) {
     setConfigError(error, { action: 'GET - One product for id' }, next)
+  }
+}
+
+controller.getImagesForIdProduct = async (req, res, next) => {
+  try {
+    const { idProduct } = req.params
+    console.log(idProduct)
+
+    const images = await ModelImagesOfProduct.find({
+      product: ObjectId(idProduct),
+    })
+    res.status(200).json(images)
+  } catch (error) {
+    setConfigError(error, { action: 'GET - All images for a product' }, next)
   }
 }
 
@@ -78,6 +96,31 @@ controller.postProduct = async (req, res, next) => {
     res.status(200).json(response)
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new product' }, next)
+  }
+}
+
+controller.postOneImage = async (req, res, next) => {
+  try {
+    const files = req.files ?? []
+    const file = files.file
+
+    const body = req.body
+    const { idProduct } = body
+    if (isSomeEmptyFromModel([idProduct])) return
+
+    const { url } = await uploadImageToDB({ file })
+    const imagesOfProduct = new ModelImagesOfProduct({
+      url,
+      order: 2,
+      product: ObjectId(idProduct),
+    })
+    await imagesOfProduct.save()
+
+    res
+      .status(200)
+      .json({ message: '¡Archivo subido correctamente!', url: 'hello' })
+  } catch (error) {
+    setConfigError(error, { action: 'POST - A image in product' }, next)
   }
 }
 
