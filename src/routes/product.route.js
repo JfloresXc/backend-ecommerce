@@ -13,6 +13,7 @@ const {
   getProducts,
   postOneImage,
   getImagesForIdProduct,
+  deleteImageOfProduct,
 } = require('../controllers/product.controller')
 const {
   DICTIONARY_ACTIONS,
@@ -40,5 +41,11 @@ route.post('/image', fileMiddleware, postOneImage)
 route.post('/', verifyToken, checkRole(PRODUCT, ADD), postProduct)
 route.put('/:id', verifyToken, checkRole(PRODUCT, UPDATE), updateProduct)
 route.delete('/:id', verifyToken, checkRole(PRODUCT, DELETE), deleteProduct)
+route.delete(
+  '/imagesForIdProduct/:id',
+  verifyToken,
+  checkRole(PRODUCT, DELETE),
+  deleteImageOfProduct
+)
 
 module.exports = route

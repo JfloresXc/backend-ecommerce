@@ -8,6 +8,11 @@ const SchemaModel = new Schema(
       required: true,
       unique: true,
     },
+    fileName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     order: {
       type: Number,
     },

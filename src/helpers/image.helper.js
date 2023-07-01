@@ -1,9 +1,10 @@
 const { bucket } = require('../config/firebase')
 const ErrorLocal = require('../utils/Error')
 
-async function uploadImageToDB({ file }) {
+const FILEPATH = 'ecommerce'
+async function uploadImageToDB({ file, fileName }) {
   try {
-    const storagePath = `ecommerce/${file.name}`
+    const storagePath = `${FILEPATH}/${fileName}`
     const fileRef = bucket.file(storagePath)
 
     // Sube el archivo a Firebase Storage
@@ -19,4 +20,17 @@ async function uploadImageToDB({ file }) {
   }
 }
 
-module.exports = { uploadImageToDB }
+async function deleteImage({ fileName }) {
+  try {
+    const filePath = `${FILEPATH}/${fileName}`
+
+    // Elimina el archivo del bucket
+    const response = await bucket.file(filePath).delete()
+
+    return response
+  } catch (error) {
+    throw new ErrorLocal({ message: error.message, statusCode: 400 })
+  }
+}
+
+module.exports = { uploadImageToDB, deleteImage }

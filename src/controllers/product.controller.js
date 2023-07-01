@@ -10,7 +10,7 @@ const { configError } = require('../helpers/catchHandler')
 const MODULE = 'PRODUCT'
 const { setConfigError } = configError({ module: MODULE })
 const { isSomeEmptyFromModel } = require('../helpers/validations')
-const { uploadImageToDB } = require('../helpers/image.helper')
+const { uploadImageToDB, deleteImage } = require('../helpers/image.helper')
 
 const controller = {}
 
@@ -49,7 +49,6 @@ controller.getProduct = async (req, res, next) => {
 controller.getImagesForIdProduct = async (req, res, next) => {
   try {
     const { idProduct } = req.params
-    console.log(idProduct)
 
     const images = await ModelImagesOfProduct.find({
       product: ObjectId(idProduct),
@@ -103,15 +102,18 @@ controller.postOneImage = async (req, res, next) => {
   try {
     const files = req.files ?? []
     const file = files.file
+    const dateNow = new Date().toISOString().substring(0, 10)
+    const fileName = `${dateNow}-${file.name}`
 
     const body = req.body
     const { idProduct } = body
     if (isSomeEmptyFromModel([idProduct])) return
 
-    const { url } = await uploadImageToDB({ file })
+    const { url } = await uploadImageToDB({ file, fileName })
     const imagesOfProduct = new ModelImagesOfProduct({
       url,
       order: 2,
+      fileName,
       product: ObjectId(idProduct),
     })
     await imagesOfProduct.save()
@@ -120,7 +122,7 @@ controller.postOneImage = async (req, res, next) => {
       .status(200)
       .json({ message: '¡Archivo subido correctamente!', url: 'hello' })
   } catch (error) {
-    setConfigError(error, { action: 'POST - A image in product' }, next)
+    setConfigError(error, { action: 'POST - A image of product' }, next)
   }
 }
 
@@ -184,6 +186,32 @@ controller.deleteProduct = async (req, res, next) => {
     res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
   } catch (error) {
     setConfigError(error, { action: 'DELETE - A product for id' }, next)
+  }
+}
+
+controller.deleteImageOfProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
+
+    const deletedProduct = await ModelImagesOfProduct.findByIdAndDelete(id)
+    if (!deletedProduct)
+      throw new ErrorLocal({
+        message: 'Id is not finded, image is not deleted',
+        statusCode: 400,
+      })
+
+    const fileName = deletedProduct.fileName
+    const responseDeleted = await deleteImage({ fileName })
+    console.log(responseDeleted)
+
+    res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
+  } catch (error) {
+    setConfigError(
+      error,
+      { action: 'DELETE - A image of product for id' },
+      next
+    )
   }
 }
 
