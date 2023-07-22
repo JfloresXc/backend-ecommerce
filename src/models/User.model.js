@@ -5,29 +5,29 @@ const ShemaModel = new Schema(
   {
     username: {
       type: String,
-      default: ''
+      default: '',
     },
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     role: {
       type: Types.ObjectId,
       ref: 'Role',
-      required: true
+      required: true,
     },
     state: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 

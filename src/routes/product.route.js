@@ -14,6 +14,7 @@ const {
   postOneImage,
   getImagesForIdProduct,
   deleteImageOfProduct,
+  getProductsForSearchParameters,
 } = require('../controllers/product.controller')
 const {
   DICTIONARY_ACTIONS,
@@ -36,6 +37,7 @@ route.get(
   checkRole(PRODUCT, LIST),
   getImagesForIdProduct
 )
+route.get('/search', getProductsForSearchParameters)
 route.get('/:id', verifyToken, checkRole(PRODUCT, LIST), getProduct)
 route.post('/image', fileMiddleware, postOneImage)
 route.post('/', verifyToken, checkRole(PRODUCT, ADD), postProduct)

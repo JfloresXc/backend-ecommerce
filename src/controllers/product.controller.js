@@ -34,6 +34,34 @@ controller.getProductForIdCategory = async (req, res, next) => {
   }
 }
 
+controller.getProductsForSearchParameters = async (req, res, next) => {
+  try {
+    const { searchtext = '', page = '', limit = '' } = req.query
+
+    const query = {
+      $or: [
+        { name: { $regex: searchtext, $options: 'i' } },
+        { description: { $regex: searchtext, $options: 'i' } },
+      ],
+    }
+
+    const count = await Model.countDocuments(query)
+    const totalPages = Math.ceil(count / parseInt(limit))
+    const skip = (parseInt(page) - 1) * parseInt(limit)
+
+    const products = await Model.find(query)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 })
+      .populate('category')
+      .populate('images')
+
+    res.status(200).json({ products, totalPages })
+  } catch (error) {
+    setConfigError(error, { action: 'GET - All products' }, next)
+  }
+}
+
 controller.getProduct = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -90,6 +118,7 @@ controller.postProduct = async (req, res, next) => {
       brand,
       state,
       category: ObjectId(idCategory),
+      images: [],
     })
     const response = await productToSave.save()
     res.status(200).json(response)
@@ -116,7 +145,14 @@ controller.postOneImage = async (req, res, next) => {
       fileName,
       product: ObjectId(idProduct),
     })
-    await imagesOfProduct.save()
+
+    const imageResult = await imagesOfProduct.save()
+    const product = await Model.findById(idProduct)
+    const { images = [] } = product
+
+    await Model.findByIdAndUpdate(idProduct, {
+      images: [...images, imageResult._id],
+    })
 
     res
       .status(200)
@@ -202,8 +238,17 @@ controller.deleteImageOfProduct = async (req, res, next) => {
       })
 
     const fileName = deletedProduct.fileName
-    const responseDeleted = await deleteImage({ fileName })
-    console.log(responseDeleted)
+    await deleteImage({ fileName })
+
+    const idProduct = deletedProduct.product
+    const { images = [] } = await Model.findById(idProduct).populate('images')
+    const idImage = `${id}`
+
+    const imagesFiltered = images.filter((image) => image.id !== idImage)
+
+    await Model.findByIdAndUpdate(idProduct, {
+      images: [...imagesFiltered],
+    })
 
     res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
   } catch (error) {

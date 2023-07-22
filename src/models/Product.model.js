@@ -50,6 +50,7 @@ const SchemaModel = new Schema(
       required: true,
       ref: 'Category',
     },
+    images: [{ type: Schema.Types.ObjectId, ref: 'ImagesOfProduct' }],
   },
   {
     timestamps: true,
