@@ -1,5 +1,7 @@
 const { Category: Model } = require('../models/Category.models')
-
+const {
+  Types: { ObjectId },
+} = require('mongoose')
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
 const MODULE = 'Category'
@@ -14,7 +16,7 @@ const controller = {}
 controller.getCategories = async (request, res, next) => {
   try {
     const query = validateParamsInQuery({ request })
-    const Categories = await Model.find(query)
+    const Categories = await Model.find(query).populate('family')
     res.status(200).json(Categories)
   } catch (error) {
     setConfigError(error, { action: 'GET - All Categories' }, next)
@@ -27,7 +29,7 @@ controller.getCategory = async (req, res, next) => {
 
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
-    const category = await Model.findById(id)
+    const category = await Model.findById(id).populate('family')
     res.json(category)
   } catch (error) {
     setConfigError(error, { action: 'GET - One Category for id' }, next)
@@ -37,13 +39,14 @@ controller.getCategory = async (req, res, next) => {
 controller.postCategory = async (req, res, next) => {
   try {
     const body = req.body
-    const { name, description, state } = body
+    const { name, description, idFamily, state } = body
 
-    if (isSomeEmptyFromModel([name])) return
+    if (isSomeEmptyFromModel([name, idFamily])) return
 
     const categoryToSave = new Model({
       name,
       description,
+      family: ObjectId(idFamily),
       state,
     })
 
@@ -58,17 +61,18 @@ controller.updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params
     const body = req.body
-    const { name, description, state } = body
+    const { name, description, idFamily, state } = body
 
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
-    if (isSomeEmptyFromModel([name])) return
+    if (isSomeEmptyFromModel([name, idFamily])) return
 
     const response = await Model.findByIdAndUpdate(
       id,
       {
         name,
         description,
+        family: ObjectId(idFamily),
         state,
       },
       { new: true }

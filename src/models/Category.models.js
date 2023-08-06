@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema, Types } = require('mongoose')
 const { setCustomedModel } = require('../helpers/mongooseHandler')
 
 const SchemaModel = new Schema(
@@ -11,6 +11,11 @@ const SchemaModel = new Schema(
     description: {
       type: String,
       default: '',
+    },
+    family: {
+      type: Types.ObjectId,
+      required: true,
+      ref: 'Family',
     },
     state: {
       type: Number,

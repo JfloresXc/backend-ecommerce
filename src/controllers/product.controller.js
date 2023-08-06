@@ -36,13 +36,19 @@ controller.getProductForIdCategory = async (req, res, next) => {
 
 controller.getProductsForSearchParameters = async (req, res, next) => {
   try {
-    const { searchtext = '', page = '', limit = '' } = req.query
+    const {
+      searchtext = '',
+      page = '',
+      limit = '',
+      maxPrice = 1000,
+    } = req.query
 
     const query = {
       $or: [
         { name: { $regex: searchtext, $options: 'i' } },
         { description: { $regex: searchtext, $options: 'i' } },
       ],
+      price: { $lte: maxPrice },
     }
 
     const count = await Model.countDocuments(query)

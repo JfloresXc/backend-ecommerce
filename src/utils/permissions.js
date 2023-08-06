@@ -60,6 +60,12 @@ const MODULES_ADMIN = [
     name: 'Category',
     code: '0007',
   },
+  {
+    description: 'Familia',
+    state: 1,
+    name: 'Family',
+    code: '0008',
+  },
 ]
 
 const DICTIONARY_MODULES = {
@@ -70,6 +76,7 @@ const DICTIONARY_MODULES = {
   PERMISSION: '0005',
   ROLE: '0006',
   CATEGORY: '0007',
+  FAMILY: '0008',
 }
 
 const DICTIONARY_ACTIONS = {

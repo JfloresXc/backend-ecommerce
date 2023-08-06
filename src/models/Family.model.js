@@ -5,23 +5,22 @@ const SchemaModel = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     description: {
       type: String,
-      default: ''
+      default: '',
     },
     state: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
-
 )
 
 setCustomedModel(SchemaModel)
 
-module.exports = { Collection: model('Collection', SchemaModel) }
+module.exports = { Family: model('Family', SchemaModel) }
