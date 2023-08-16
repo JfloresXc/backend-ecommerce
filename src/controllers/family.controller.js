@@ -31,7 +31,15 @@ controller.getActivedFamilies = async (request, res, next) => {
       const categoriesByFamily = categories.filter(
         (category) => category.family.toString() === family._id.toString()
       )
-      return { ...family._doc, categories: categoriesByFamily }
+
+      const familyObject = {
+        ...family._doc,
+        id: family._id,
+      }
+      delete familyObject._id
+      delete familyObject.__v
+
+      return { ...familyObject, categories: categoriesByFamily }
     })
 
     res.status(200).json(familiesWithCategories)

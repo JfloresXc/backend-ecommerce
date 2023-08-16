@@ -11,6 +11,7 @@ const MODULE = 'PRODUCT'
 const { setConfigError } = configError({ module: MODULE })
 const { isSomeEmptyFromModel } = require('../helpers/validations')
 const { uploadImageToDB, deleteImage } = require('../helpers/image.helper')
+const { getSortOptions } = require('../utils/moongose-utils')
 
 const controller = {}
 
@@ -40,7 +41,9 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
       searchtext = '',
       page = '',
       limit = '',
-      maxPrice = 1000,
+      maxprice = 1000,
+      order = '',
+      idcategory = '',
     } = req.query
 
     const query = {
@@ -48,8 +51,10 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
         { name: { $regex: searchtext, $options: 'i' } },
         { description: { $regex: searchtext, $options: 'i' } },
       ],
-      price: { $lte: maxPrice },
+      price: { $lte: maxprice },
     }
+
+    if (idcategory) query.category = ObjectId(idcategory)
 
     const count = await Model.countDocuments(query)
     const totalPages = Math.ceil(count / parseInt(limit))
@@ -58,13 +63,13 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
     const products = await Model.find(query)
       .skip(skip)
       .limit(parseInt(limit))
-      .sort({ createdAt: -1 })
+      .sort({ ...getSortOptions(order) })
       .populate('category')
       .populate('images')
 
     res.status(200).json({ products, totalPages })
   } catch (error) {
-    setConfigError(error, { action: 'GET - All products' }, next)
+    setConfigError(error, { action: 'GET - Products from search' }, next)
   }
 }
 

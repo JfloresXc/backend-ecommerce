@@ -36,6 +36,24 @@ controller.getCategory = async (req, res, next) => {
   }
 }
 
+controller.getActivedCategory = async (request, res, next) => {
+  try {
+    const { id } = request.params
+    if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
+
+    const category = await Model.findById(id).populate('family')
+
+    if (!category)
+      throw new ErrorLocal({ message: 'Category not found', statusCode: 404 })
+
+    if (category.state === 0)
+      throw new ErrorLocal({ message: 'Category not actived', statusCode: 400 })
+    res.json(category)
+  } catch (error) {
+    setConfigError(error, { action: 'GET - One Category for id' }, next)
+  }
+}
+
 controller.postCategory = async (req, res, next) => {
   try {
     const body = req.body
