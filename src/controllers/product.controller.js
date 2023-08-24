@@ -67,7 +67,7 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
       .populate('category')
       .populate('images')
 
-    res.status(200).json({ products, totalPages })
+    res.status(200).json({ products, totalPages, totalProducts: count })
   } catch (error) {
     setConfigError(error, { action: 'GET - Products from search' }, next)
   }
