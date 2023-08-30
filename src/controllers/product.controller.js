@@ -5,6 +5,7 @@ const { Product: Model } = require('../models/Product.model')
 const {
   ImagesOfProduct: ModelImagesOfProduct,
 } = require('../models/ImagesOfProduct.model')
+const { Category } = require('../models/Category.models')
 const ErrorLocal = require('../utils/Error')
 const { configError } = require('../helpers/catchHandler')
 const MODULE = 'PRODUCT'
@@ -35,12 +36,21 @@ controller.getProductForIdCategory = async (req, res, next) => {
   }
 }
 
+/**
+ * Obtener productos mediante una búsqueda de texto
+ * a partir de nombre y descripción.
+ * También se puede filtrar por precio máximo y ordenar por precio.
+ * Esto nos servirá para el buscador de un ecommerce.
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 controller.getProductsForSearchParameters = async (req, res, next) => {
   try {
     const {
       searchtext = '',
-      page = '',
-      limit = '',
+      page = 1,
+      limit = 1,
       maxprice = 1000,
       order = '',
       idcategory = '',
@@ -52,6 +62,7 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
         { description: { $regex: searchtext, $options: 'i' } },
       ],
       price: { $lte: maxprice },
+      state: 1,
     }
 
     if (idcategory) query.category = ObjectId(idcategory)
@@ -70,6 +81,53 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
     res.status(200).json({ products, totalPages, totalProducts: count })
   } catch (error) {
     setConfigError(error, { action: 'GET - Products from search' }, next)
+  }
+}
+
+/**
+ * Obtener productos mediante el id familia.
+ * Esto nos servirá para el navbar en un ecommerce.
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+controller.getProductsForIdFamily = async (req, res, next) => {
+  try {
+    const { idFamily } = req.params
+    if (!idFamily)
+      throw new ErrorLocal({ message: 'IdFamily not found', statusCode: 400 })
+
+    const { page = 1, limit = 1, maxprice = 1000, order = '' } = req.query
+
+    const categories =
+      (await Category.find({ family: ObjectId(idFamily) })) || []
+
+    const query = {
+      price: { $lte: maxprice },
+      category: { $in: categories.map((cat) => cat._id) },
+      state: 1,
+    }
+
+    const count = await Model.countDocuments(query)
+    const totalPages = Math.ceil(count / parseInt(limit))
+    const skip = (parseInt(page) - 1) * parseInt(limit)
+
+    const products = await Model.find(query)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ ...getSortOptions(order) })
+      .populate({
+        path: 'category',
+        populate: {
+          path: 'family',
+          match: { _id: idFamily },
+        },
+      })
+      .populate('images')
+
+    res.status(200).json({ totalPages, totalProducts: count, products })
+  } catch (error) {
+    setConfigError(error, { action: 'GET - Products for idFamily' }, next)
   }
 }
 
