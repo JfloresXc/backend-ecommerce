@@ -16,6 +16,11 @@ const { getSortOptions } = require('../utils/moongose-utils')
 
 const controller = {}
 
+/**
+ * Obtener todos los productos.
+ * Esto nos servirá para el listado de productos desde el administrador.
+ * @returns {Array} Model Product
+ */
 controller.getProducts = async (req, res, next) => {
   try {
     const products = await Model.find({}).populate('category')
@@ -25,7 +30,12 @@ controller.getProducts = async (req, res, next) => {
   }
 }
 
-controller.getProductForIdCategory = async (req, res, next) => {
+/**
+ * Obtener productos mediante el id de la categoría.
+ * Esto nos servirá para el filtro de categoría
+ * @returns {Array} Model Product
+ */
+controller.getProductsForIdCategory = async (req, res, next) => {
   try {
     const { idCategory } = req.params
 
@@ -131,18 +141,57 @@ controller.getProductsForIdFamily = async (req, res, next) => {
   }
 }
 
+/**
+ * Obtener un producto mediante el id.
+ * Este metodo cuenta con permisos de administrador.
+ * @returns {Object} Model Product
+ */
 controller.getProduct = async (req, res, next) => {
   try {
     const { id } = req.params
+
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
     const product = await Model.findById(id).populate('category')
     res.json(product)
   } catch (error) {
-    setConfigError(error, { action: 'GET - One product for id' }, next)
+    setConfigError(
+      error,
+      { action: 'GET - One product for id in administrator' },
+      next
+    )
   }
 }
 
+/**
+ * Obtener un producto activo mediante el id.
+ * Esto nos servirá para mostrar el detalle de un producto, ademas de sus imagénes.
+ * Este metodo no cuenta con permisos de administrador.
+ */
+controller.getActivedProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
+
+    const product = await Model.findById(id)
+      .populate({
+        path: 'category',
+        populate: {
+          path: 'family',
+        },
+      })
+      .populate('images')
+    res.json(product)
+  } catch (error) {
+    setConfigError(error, { action: 'GET - One product for id in user' }, next)
+  }
+}
+
+/**
+ * Obtener imagenes de un producto mediante el id.
+ * @returns {Array} Model ImagesOfProduct
+ */
 controller.getImagesForIdProduct = async (req, res, next) => {
   try {
     const { idProduct } = req.params
@@ -156,6 +205,10 @@ controller.getImagesForIdProduct = async (req, res, next) => {
   }
 }
 
+/**
+ * Crear un nuevo producto.
+ * @returns {Object} Model Product
+ */
 controller.postProduct = async (req, res, next) => {
   try {
     const body = req.body
@@ -196,6 +249,10 @@ controller.postProduct = async (req, res, next) => {
   }
 }
 
+/**
+ * Crear una nueva imagen para un producto específico.
+ * @returns {String} Mensaje de éxito
+ */
 controller.postOneImage = async (req, res, next) => {
   try {
     const files = req.files ?? []
@@ -231,6 +288,10 @@ controller.postOneImage = async (req, res, next) => {
   }
 }
 
+/**
+ * Actualizar un producto mediante el id.
+ * @returns {Object} Model Product
+ */
 controller.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -276,6 +337,10 @@ controller.updateProduct = async (req, res, next) => {
   }
 }
 
+/**
+ * Eliminar un producto mediante el id.
+ * @returns {Object} Model Product
+ */
 controller.deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -294,6 +359,10 @@ controller.deleteProduct = async (req, res, next) => {
   }
 }
 
+/**
+ * Eliminar una imagen de un producto mediante el id del producto.
+ *
+ */
 controller.deleteImageOfProduct = async (req, res, next) => {
   try {
     const { id } = req.params

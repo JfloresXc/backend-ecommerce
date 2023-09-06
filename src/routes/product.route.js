@@ -9,13 +9,14 @@ const {
   updateProduct,
   deleteProduct,
   getProduct,
-  getProductForIdCategory,
   getProducts,
   postOneImage,
   getImagesForIdProduct,
   deleteImageOfProduct,
   getProductsForSearchParameters,
   getProductsForIdFamily,
+  getActivedProduct,
+  getProductsForIdCategory,
 } = require('../controllers/product.controller')
 const {
   DICTIONARY_ACTIONS,
@@ -30,7 +31,7 @@ route.get(
   '/forIdCollection/:idCollection',
   verifyToken,
   checkRole(PRODUCT, LIST),
-  getProductForIdCategory
+  getProductsForIdCategory
 )
 route.get(
   '/imagesForIdProduct/:idProduct',
@@ -40,6 +41,7 @@ route.get(
 )
 route.get('/family/:idFamily', getProductsForIdFamily)
 route.get('/search', getProductsForSearchParameters)
+route.get('/actived/:id', getActivedProduct)
 route.get('/:id', verifyToken, checkRole(PRODUCT, LIST), getProduct)
 route.post('/image', fileMiddleware, postOneImage)
 route.post('/', verifyToken, checkRole(PRODUCT, ADD), postProduct)
