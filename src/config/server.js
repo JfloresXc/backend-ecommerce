@@ -35,8 +35,12 @@ app.use((error, request, response, next) => {
 })
 
 // STATICS
-const publicPath = path.resolve(__dirname, '../storage')
+const publicPath = path.resolve(__dirname, '../../.next')
 app.use(express.static(publicPath))
+
+// app.get('/', (request, response) => {
+//   response.send('')
+// })
 
 // LISTEN
 const server = app.listen(app.get('port'), () =>

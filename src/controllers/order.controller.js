@@ -32,8 +32,15 @@ controller.getAllOrders = async (req, res, next) => {
 controller.postNewOrder = async (req, res, next) => {
   try {
     const body = req.body
-    const { nameClient, phone, province, district, address, products, total } =
-      body
+    const {
+      nameClient,
+      phonenumber,
+      department,
+      province,
+      district,
+      address,
+      products,
+    } = body
 
     // let orderDate = new Date()
 
@@ -47,11 +54,11 @@ controller.postNewOrder = async (req, res, next) => {
     if (
       isSomeEmptyFromModel([
         nameClient,
-        phone,
+        department,
+        phonenumber,
         province,
         district,
         address,
-        total,
       ])
     )
       return
@@ -62,19 +69,20 @@ controller.postNewOrder = async (req, res, next) => {
     idOrder = idOrder.substring(0, 8)
 
     for (const product of products) {
-      const { nameProduct = '', amount = 0, unitPrice } = product
+      const { nameProduct = '', quantity = 0, unitPrice } = product
 
       await addRow({
         id: idOrder,
         nombreCliente: nameClient,
-        telefono: phone,
+        telefono: phonenumber,
         provincia: province,
         distrito: district,
+        departamento: department,
         direccion: address,
         nombreProducto: nameProduct,
-        cantidad: amount,
+        cantidad: quantity,
         precioUnitario: unitPrice,
-        total: unitPrice * amount || -1,
+        total: unitPrice * quantity || -1,
         estado: 'PENDIENTE',
       })
     }
