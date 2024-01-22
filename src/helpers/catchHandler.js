@@ -1,4 +1,3 @@
-
 const configError = ({ module = 'NOT MODULE' }) => {
   const setConfigError = (error, { action }, next) => {
     error.module = module

@@ -26,7 +26,6 @@ controller.getCategories = async (request, res, next) => {
 controller.getCategory = async (req, res, next) => {
   try {
     const { id } = req.params
-
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
     const category = await Model.findById(id).populate('family')

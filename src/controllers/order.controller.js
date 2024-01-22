@@ -14,16 +14,54 @@ controller.getAllOrders = async (req, res, next) => {
     for (let i = 0; i < orders.length; i++) {
       orders[i] = {
         id: orders[i].get('id'),
-        name: orders[i].get('nombre'),
-        phone: orders[i].get('telefono'),
-        dni: orders[i].get('dni'),
-        product: orders[i].get('producto'),
+        nameClient: orders[i].get('nombreCliente'),
+        phonenumber: orders[i].get('telefono'),
+        departament: orders[i].get('departarmento'),
+        province: orders[i].get('provincia'),
+        district: orders[i].get('distrito'),
+        address: orders[i].get('direccion'),
+        nameProduct: orders[i].get('nombreProducto'),
+        quantity: orders[i].get('cantidad'),
+        unitPrice: orders[i].get('precioUnitario'),
+        total: orders[i].get('total'),
         state: orders[i].get('estado'),
-        // email: orders[i].get('correo'),
+        date: orders[i].get('fecha'),
       }
     }
 
     res.status(200).json(orders)
+  } catch (error) {
+    setConfigError(error, { action: 'GET - All orders' }, next)
+  }
+}
+
+controller.getOrderForId = async (req, res, next) => {
+  const { id } = req.params
+  if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
+
+  try {
+    const orders = await getRows()
+
+    for (let i = 0; i < orders.length; i++) {
+      orders[i] = {
+        id: orders[i].get('id'),
+        nameClient: orders[i].get('nombreCliente'),
+        phonenumber: orders[i].get('telefono'),
+        departament: orders[i].get('departarmento'),
+        province: orders[i].get('provincia'),
+        district: orders[i].get('distrito'),
+        address: orders[i].get('direccion'),
+        nameProduct: orders[i].get('nombreProducto'),
+        quantity: orders[i].get('cantidad'),
+        unitPrice: orders[i].get('precioUnitario'),
+        total: orders[i].get('total'),
+        state: orders[i].get('estado'),
+        date: orders[i].get('fecha'),
+      }
+    }
+
+    const findedOrders = orders.filter((order) => order.id === id)
+    res.status(200).json(findedOrders)
   } catch (error) {
     setConfigError(error, { action: 'GET - All orders' }, next)
   }
@@ -42,7 +80,9 @@ controller.postNewOrder = async (req, res, next) => {
       products,
     } = body
 
-    // let orderDate = new Date()
+    const nowDate = new Date().toLocaleString('es-PE', {
+      timeZone: 'America/Lima',
+    })
 
     if (products?.length === 0) {
       throw new ErrorLocal({
@@ -71,6 +111,7 @@ controller.postNewOrder = async (req, res, next) => {
     for (const product of products) {
       const { nameProduct = '', quantity = 0, unitPrice } = product
 
+      console.log(parseFloat(unitPrice * quantity), quantity, unitPrice)
       await addRow({
         id: idOrder,
         nombreCliente: nameClient,
@@ -79,15 +120,16 @@ controller.postNewOrder = async (req, res, next) => {
         distrito: district,
         departamento: department,
         direccion: address,
+        fecha: nowDate,
         nombreProducto: nameProduct,
-        cantidad: quantity,
-        precioUnitario: unitPrice,
-        total: unitPrice * quantity || -1,
+        cantidad: parseInt(quantity),
+        precioUnitario: parseFloat(unitPrice).toFixed(2),
+        total: parseFloat(unitPrice * quantity).toFixed(2) || -1,
         estado: 'PENDIENTE',
       })
     }
 
-    res.status(200).json(products)
+    res.status(200).json({ idOrder, products })
   } catch (error) {
     setConfigError(error, { action: 'GET - All orders' }, next)
   }
