@@ -29,7 +29,7 @@ controller.getAllOrders = async (req, res, next) => {
       }
     }
 
-    res.status(200).json(orders)
+    res.status(200).json({ data: orders })
   } catch (error) {
     setConfigError(error, { action: 'GET - All orders' }, next)
   }
@@ -61,7 +61,7 @@ controller.getOrderForId = async (req, res, next) => {
     }
 
     const findedOrders = orders.filter((order) => order.id === id)
-    res.status(200).json(findedOrders)
+    res.status(200).json({ data: findedOrders })
   } catch (error) {
     setConfigError(error, { action: 'GET - All orders' }, next)
   }
@@ -129,7 +129,7 @@ controller.postNewOrder = async (req, res, next) => {
       })
     }
 
-    res.status(200).json({ idOrder, products })
+    res.status(200).json({ data: { idOrder, products } })
   } catch (error) {
     setConfigError(error, { action: 'GET - All orders' }, next)
   }

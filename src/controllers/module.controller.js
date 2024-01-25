@@ -19,7 +19,7 @@ controller.postModule = async (req, res, next) => {
       code,
     })
     const response = await moduleSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { module: 'POST - Create a new module' }, next)
   }
@@ -48,7 +48,7 @@ controller.postModules = async (req, res, next) => {
       modulesToSend.push(response)
     }
 
-    res.status(200).json(modulesToSend)
+    res.status(200).json({ data: modulesToSend })
   } catch (error) {
     setConfigError(error, { module: 'POST - Create a many modules' }, next)
   }
@@ -57,7 +57,7 @@ controller.postModules = async (req, res, next) => {
 controller.getAllModules = async (req, res, next) => {
   try {
     const modules = await Model.find({})
-    res.status(200).json(modules)
+    res.status(200).json({ data: modules })
   } catch (error) {
     setConfigError(error, { module: 'GET - All modules' }, next)
   }

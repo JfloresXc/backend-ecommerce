@@ -17,7 +17,7 @@ controller.getCategories = async (request, res, next) => {
   try {
     const query = validateParamsInQuery({ request })
     const Categories = await Model.find(query).populate('family')
-    res.status(200).json(Categories)
+    res.status(200).json({ data: Categories })
   } catch (error) {
     setConfigError(error, { action: 'GET - All Categories' }, next)
   }
@@ -29,7 +29,7 @@ controller.getCategory = async (req, res, next) => {
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
     const category = await Model.findById(id).populate('family')
-    res.json(category)
+    res.json({ data: category })
   } catch (error) {
     setConfigError(error, { action: 'GET - One Category for id' }, next)
   }
@@ -47,7 +47,7 @@ controller.getActivedCategory = async (request, res, next) => {
 
     if (category.state === 0)
       throw new ErrorLocal({ message: 'Category not actived', statusCode: 400 })
-    res.json(category)
+    res.json({ data: category })
   } catch (error) {
     setConfigError(error, { action: 'GET - One Category for id' }, next)
   }
@@ -68,7 +68,7 @@ controller.postCategory = async (req, res, next) => {
     })
 
     const response = await categoryToSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new Category' }, next)
   }
@@ -94,7 +94,7 @@ controller.updateCategory = async (req, res, next) => {
       },
       { new: true }
     )
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a category for id' }, next)
   }

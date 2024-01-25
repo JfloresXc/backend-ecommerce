@@ -29,7 +29,7 @@ controller.postPermission = async (req, res, next) => {
       role: ObjectId(idRole),
     })
     const response = await permissionSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new permission' }, next)
   }
@@ -75,9 +75,11 @@ controller.getAllPermissionss = async (req, res, next) => {
     const actions = await getAllActions()
 
     res.status(200).json({
-      permissions,
-      actions,
-      modules,
+      data: {
+        permissions,
+        actions,
+        modules,
+      },
     })
   } catch (error) {
     setConfigError(error, { action: 'GET - All permissions' }, next)
@@ -95,9 +97,11 @@ controller.getPermissionssForIdRole = async (req, res, next) => {
     const actions = await getAllActions()
 
     res.status(200).json({
-      permissions,
-      actions,
-      modules,
+      data: {
+        permissions,
+        actions,
+        modules,
+      },
     })
   } catch (error) {
     setConfigError(error, { action: 'GET - All permissions' }, next)
@@ -110,8 +114,10 @@ controller.getModulesAndActions = async (req, res, next) => {
     const actions = await getAllActions()
 
     res.status(200).json({
-      actions,
-      modules,
+      data: {
+        actions,
+        modules,
+      },
     })
   } catch (error) {
     setConfigError(error, { action: 'GET - All permissions' }, next)
@@ -154,7 +160,7 @@ controller.deletePermission = async (req, res, next) => {
     }
     res
       .status(200)
-      .json({ message: '¡Deleted successfully!', deletedPermission })
+      .json({ message: '¡Deleted successfully!', data: deletedPermission })
   } catch (error) {
     setConfigError(error, { action: 'DELETE - A product for id' }, next)
   }

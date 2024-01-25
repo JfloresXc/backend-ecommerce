@@ -16,7 +16,7 @@ controller.getFamilies = async (request, res, next) => {
   try {
     const query = validateParamsInQuery({ request })
     const Families = await Model.find(query)
-    res.status(200).json(Families)
+    res.status(200).json({ data: Families })
   } catch (error) {
     setConfigError(error, { action: 'GET - All Families' }, next)
   }
@@ -42,7 +42,7 @@ controller.getActivedFamilies = async (request, res, next) => {
       return { ...familyObject, categories: categoriesByFamily }
     })
 
-    res.status(200).json(familiesWithCategories)
+    res.status(200).json({ data: familiesWithCategories })
   } catch (error) {
     setConfigError(error, { action: 'GET - All Families' }, next)
   }
@@ -55,7 +55,7 @@ controller.getFamily = async (req, res, next) => {
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
     const family = await Model.findById(id)
-    res.json(family)
+    res.json({ data: family })
   } catch (error) {
     setConfigError(error, { action: 'GET - One Family for id' }, next)
   }
@@ -75,7 +75,7 @@ controller.postFamily = async (req, res, next) => {
     })
 
     const response = await familyToSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new Family' }, next)
   }
@@ -100,7 +100,7 @@ controller.updateFamily = async (req, res, next) => {
       },
       { new: true }
     )
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a family for id' }, next)
   }

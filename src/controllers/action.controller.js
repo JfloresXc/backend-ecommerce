@@ -17,7 +17,7 @@ controller.postAction = async (req, res, next) => {
       code,
     })
     const response = await actionSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new action' }, next)
   }
@@ -44,7 +44,7 @@ controller.postActions = async (req, res, next) => {
       actionsToSend.push(response)
     }
 
-    res.status(200).json(actionsToSend)
+    res.status(200).json({ data: actionsToSend })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a many actions' }, next)
   }
@@ -53,7 +53,7 @@ controller.postActions = async (req, res, next) => {
 controller.getAllActions = async (req, res, next) => {
   try {
     const actions = await Model.find({})
-    res.status(200).json(actions)
+    res.status(200).json({ data: actions })
   } catch (error) {
     setConfigError(error, { action: 'GET - All actions' }, next)
   }

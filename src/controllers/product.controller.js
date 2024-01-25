@@ -24,7 +24,7 @@ const controller = {}
 controller.getProducts = async (req, res, next) => {
   try {
     const products = await Model.find({}).populate('category')
-    res.status(200).json(products)
+    res.status(200).json({ data: products })
   } catch (error) {
     setConfigError(error, { action: 'GET - All products' }, next)
   }
@@ -40,7 +40,7 @@ controller.getProductsForIdCategory = async (req, res, next) => {
     const { idCategory } = req.params
 
     const products = await Model.find({ category: ObjectId(idCategory) })
-    res.status(200).json(products)
+    res.status(200).json({ data: products })
   } catch (error) {
     setConfigError(error, { action: 'GET - All products' }, next)
   }
@@ -88,7 +88,9 @@ controller.getProductsForSearchParameters = async (req, res, next) => {
       .populate('category')
       .populate('images')
 
-    res.status(200).json({ products, totalPages, totalProducts: count })
+    res
+      .status(200)
+      .json({ data: { products, totalPages, totalProducts: count } })
   } catch (error) {
     setConfigError(error, { action: 'GET - Products from search' }, next)
   }
@@ -135,7 +137,9 @@ controller.getProductsForIdFamily = async (req, res, next) => {
       })
       .populate('images')
 
-    res.status(200).json({ totalPages, totalProducts: count, products })
+    res
+      .status(200)
+      .json({ data: { totalPages, totalProducts: count, products } })
   } catch (error) {
     setConfigError(error, { action: 'GET - Products for idFamily' }, next)
   }
@@ -153,7 +157,7 @@ controller.getProduct = async (req, res, next) => {
     if (!id) throw new ErrorLocal({ message: 'Id not found', statusCode: 400 })
 
     const product = await Model.findById(id).populate('category')
-    res.json(product)
+    res.json({ data: product })
   } catch (error) {
     setConfigError(
       error,
@@ -182,7 +186,7 @@ controller.getActivedProduct = async (req, res, next) => {
         },
       })
       .populate('images')
-    res.json(product)
+    res.json({ data: product })
   } catch (error) {
     setConfigError(error, { action: 'GET - One product for id in user' }, next)
   }
@@ -199,7 +203,7 @@ controller.getImagesForIdProduct = async (req, res, next) => {
     const images = await ModelImagesOfProduct.find({
       product: ObjectId(idProduct),
     })
-    res.status(200).json(images)
+    res.status(200).json({ data: images })
   } catch (error) {
     setConfigError(error, { action: 'GET - All images for a product' }, next)
   }
@@ -243,7 +247,7 @@ controller.postProduct = async (req, res, next) => {
       images: [],
     })
     const response = await productToSave.save()
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'POST - Create a new product' }, next)
   }
@@ -271,6 +275,7 @@ controller.postOneImage = async (req, res, next) => {
       fileName,
       product: ObjectId(idProduct),
     })
+    console.log(idProduct)
 
     const imageResult = await imagesOfProduct.save()
     const product = await Model.findById(idProduct)
@@ -331,7 +336,7 @@ controller.updateProduct = async (req, res, next) => {
       },
       { new: true }
     )
-    res.status(200).json(response)
+    res.status(200).json({ data: response })
   } catch (error) {
     setConfigError(error, { action: 'PUT - Update a product for id' }, next)
   }
@@ -353,7 +358,9 @@ controller.deleteProduct = async (req, res, next) => {
         message: 'Id is not finded, product is not deleted',
         statusCode: 400,
       })
-    res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
+    res
+      .status(200)
+      .json({ message: '¡Deleted successfully!', data: deletedProduct })
   } catch (error) {
     setConfigError(error, { action: 'DELETE - A product for id' }, next)
   }
@@ -388,7 +395,9 @@ controller.deleteImageOfProduct = async (req, res, next) => {
       images: [...imagesFiltered],
     })
 
-    res.status(200).json({ message: '¡Deleted successfully!', deletedProduct })
+    res
+      .status(200)
+      .json({ message: '¡Deleted successfully!', data: deletedProduct })
   } catch (error) {
     setConfigError(
       error,
